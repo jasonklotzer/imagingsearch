@@ -14,8 +14,7 @@ function promptGenerator(natLangInput) {
   // Find all studies that use a compressed transfer syntax
   // dx modality, female patient, age: <50, findings normal
   // male patient, study done in past 10 years, findings: asthma
-  // };
-
+  
   return {
     text: `
     Given a request "${natLangInput}", break it up and return as a JSON object:
