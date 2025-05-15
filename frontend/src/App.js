@@ -19,7 +19,7 @@ function App() {
     setQueryText(""); // Clear previous query
 
     try {
-      const response = await fetch("http://localhost:5000/api/query", {
+      const response = await fetch("/api/query", {
         // Replace with your backend URL
         method: "POST",
         headers: {
