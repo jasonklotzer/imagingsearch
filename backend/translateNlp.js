@@ -81,14 +81,14 @@ function constructQuery(whereClause, textSearch) {
     STRING_AGG(DISTINCT JSON_VALUE(meta.metadata, '$.Modality'), "/" ORDER BY JSON_VALUE(meta.metadata, '$.Modality')) AS Modality,
     COUNT(DISTINCT JSON_VALUE(meta.metadata, '$.SeriesInstanceUID')) AS NumberOfSeries,
     COUNT(DISTINCT JSON_VALUE(meta.metadata, '$.SOPInstanceUID')) AS NumberOfInstances,
-    ${textSearch ? "MIN(textSearch.distance) AS TextSearchDistance," : ""}
+    ${textSearch ? "CASE WHEN MIN(textSearch.distance) IS NULL THEN 1.0 ELSE MIN(textSearch.distance) END AS TextSearchDistance," : ""}
     -- ANY_VALUE(metadata) AS MetadataSample
 FROM
     \`dicom.metadataView\` AS meta
 ${
   textSearch
     ? `
-JOIN VECTOR_SEARCH(
+LEFT JOIN VECTOR_SEARCH(
   TABLE \`dicom.metadataEmbeddings\`, 'ml_generate_embedding_result',
   (
   SELECT ml_generate_embedding_result, content AS query
@@ -96,7 +96,7 @@ JOIN VECTOR_SEARCH(
   MODEL \`dicom.embedding_model\`,
   (SELECT '${textSearch}' AS content))
   ),
-  top_k => 100, options => '{"fraction_lists_to_search": 0.01}') AS textSearch
+  top_k => 1000, options => '{"fraction_lists_to_search": 0.01}') AS textSearch
 ON meta.path = textSearch.base.path AND meta.version = textSearch.base.version
 `
     : ""
@@ -104,7 +104,7 @@ ON meta.path = textSearch.base.path AND meta.version = textSearch.base.version
 ${/WHERE/.test(whereClause) ? "" : "WHERE"} ${whereClause == "" ? "TRUE" : whereClause}
 GROUP BY StudyInstanceUID
 ${textSearch ? `ORDER BY TextSearchDistance ASC` : ""}
-LIMIT 100;`;
+LIMIT 50;`;
 }
 
 async function generateQuery(natLangInput) {
