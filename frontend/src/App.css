@@ -5,13 +5,13 @@
 }
 
 .input-section {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 input {
   padding: 8px;
   margin-right: 10px;
-  width: 300px;
+  width: 450px;
 }
 
 button {
@@ -45,4 +45,10 @@ th {
 .error-message {
   color: red;
   margin-top: 10px;
+}
+
+.query-explain {
+  width: 80%;
+  background-color: #f2f2f2;
+  margin: 30px auto;
 }

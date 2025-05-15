@@ -21,30 +21,21 @@ const bigquery = new BigQuery({
 // API Endpoint
 app.post("/api/query", async (req, res) => {
   const { textInput } = req.body;
-
   if (!textInput) {
     return res.status(400).json({ message: "textInput is required." });
   }
-
   try {
-    const query = await translateNlp(textInput);
-    console.log("Generated Query:", query);
-
-    if (!query) {
+    const geminiResponse = await translateNlp(textInput);
+    if (!geminiResponse) {
       return res.status(400).json({ message: "Failed to generate query." });
     }
-
     const options = {
-      query,
-      location: "US", // Specify your BigQuery dataset location
+      query: geminiResponse.query,
+      location: "US",
     };
-
-    // Run the query
     const [rows] = await bigquery.query(options);
-    const result = { rows, query };
-
-    console.log("BigQuery Query Results:", rows);
-    res.json(result); // Send the results as JSON to the client
+    const result = { rows, geminiResponse };
+    res.json(result);
   } catch (error) {
     console.error("ERROR:", error);
     res.status(500).json({ message: "Failed to query BigQuery.", error: error.message });
