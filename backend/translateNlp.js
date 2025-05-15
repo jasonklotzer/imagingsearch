@@ -22,12 +22,13 @@ function promptGenerator(natLangInput) {
     text: `
     Given a request "${natLangInput}", break it up and return as a JSON object:
     - 'whereClause': Find DICOM metadata stored as a JSON column 'metadata' in a BigQuery table: Only use this for deterministic search and store as a WHERE clause. Make sure to use the JSON_VALUE format and SAFE_CAST when casting values. Be sensitive to handling patient name, date, age, and other DICOM specific value representations. Do not replicate information from this element to 'textSearch' or 'imageSearch'.
-    - 'textSearch': Include search text relative to diagnostic reports and other text data. Do not search for items from DICOM tags here. Store this as optimized keywords for a text embedding search.
+    - 'textSearch': Include all search text that could be found in diagnostic reports and other text data. Do not search for items from DICOM tags here. Store this as optimized keywords for a text embedding search.
     - 'imageSearch': Only include search text appropriate for searching DICOM rendered images. Do not search for items from DICOM tags here. Store this as optimized keyword search for image embedding.
     - 'notes': Any notes related to the prompt response
 
-    This is an example of the DICOM schema under JSON column 'metadata' that is used for the 'whereClause':
+    The following is an example of the DICOM schema under JSON column 'metadata' that is used for the 'whereClause':
     ${schemaExample}
+    Do not use schema keys for search that are not in the above schema.
     `,
   };
 }
@@ -101,7 +102,7 @@ ON meta.path = textSearch.base.path AND meta.version = textSearch.base.version
 `
     : ""
 }
-${/WHERE/.test(whereClause) ? "" : "WHERE"} ${whereClause == "" ? "TRUE" : whereClause}
+${/^WHERE/.test(whereClause) ? "" : "WHERE"} ${whereClause == "" ? "TRUE" : whereClause}
 GROUP BY StudyInstanceUID
 ${textSearch ? `ORDER BY TextSearchDistance ASC` : ""}
 LIMIT 50;`;
