@@ -10,19 +10,17 @@ dotenv.config(); // Load environment variables from .env file
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
-
 // Middleware
 app.use(cors()); // Enable CORS for all routes (adjust for production)
 app.use(express.json()); // Parse JSON request bodies
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, "../frontend/build")));
+app.use(express.static(path.join(__dirname, "./public")));
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
+  res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
 // Configure BigQuery
