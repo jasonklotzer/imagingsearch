@@ -4,11 +4,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "release": "release-it --ci"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Jason Klotzer",
+  "license": "Apache-2.0",
   "description": "",
   "dependencies": {
     "@google-cloud/bigquery": "^8.0.0",
@@ -16,5 +16,22 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0"
+  },
+  "release-it": {
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": false
+    },
+    "hooks": {
+      "after:release": [
+        "docker build . --tag jasonklotzer/imagingsearch:latest --tag jasonklotzer/imagingsearch:${version} --no-cache",
+        "docker push jasonklotzer/imagingsearch --all-tags"
+      ]
+    }
+  },
+  "devDependencies": {
+    "release-it": "^19.0.2"
   }
 }
