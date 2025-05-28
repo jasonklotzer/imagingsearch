@@ -28,7 +28,7 @@
       "after:release": [
         "docker build . --tag jasonklotzer/imagingsearch:latest --tag jasonklotzer/imagingsearch:${version} --no-cache",
         "docker push jasonklotzer/imagingsearch --all-tags",
-        "gcloud run deploy imagingsearch --set-env-vars=\"GCP_PROJECT_ID=data-axe-350723\" --image=jasonklotzer/imagingsearch:latest --region=us-central1 --project=data-axe-3507",
+        "gcloud run deploy imagingsearch --set-env-vars=\"GCP_PROJECT_ID=data-axe-350723\" --image=jasonklotzer/imagingsearch:latest --region=us-central1 --project=data-axe-350723",
         "gcloud run services update-traffic imagingsearch --to-latest"
       ]
     }
