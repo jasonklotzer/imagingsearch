@@ -7,7 +7,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Dev Server",
+      "name": "Launch Web Server",
       "cwd": "${workspaceFolder}/web",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],

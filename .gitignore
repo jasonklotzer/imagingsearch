@@ -58,7 +58,6 @@ jspm_packages/
 # Build outputs
 dist
 web/build/
-web/public/
 
 # yarn v2
 .yarn/cache
