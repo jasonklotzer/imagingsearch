@@ -6,6 +6,8 @@ This is the Model Context Protocol (MCP) server for the imagingsearch DICOM quer
 
 Ensure the backend Express API is running at `http://localhost:5000/api/query` (or set `IMAGINGSEARCH_API_URL`).
 
+The backend API requires DICOM data to be ingested into BigQuery. This is typically done using the [dcm2bq project](https://github.com/GoogleCloudPlatform/dcm2bq), which creates the metadata tables and embeddings that the API queries.
+
 ```bash
 npm install
 npm start
