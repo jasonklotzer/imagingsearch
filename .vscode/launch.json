@@ -5,21 +5,36 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "chrome",
+      "type": "node",
       "request": "launch",
-      "name": "Launch Frontend",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}/frontend"
+      "name": "Launch Dev Server",
+      "cwd": "${workspaceFolder}/web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "skipFiles": ["<node_internals>/**"],
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal"
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Backend",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "program": "${workspaceFolder}/backend/server.js",
-      "envFile": "${workspaceFolder}/backend/.env"
+      "name": "Launch MCP Server",
+      "cwd": "${workspaceFolder}/mcp",
+      "program": "${workspaceFolder}/mcp/mcp-server.js",
+      "skipFiles": ["<node_internals>/**"],
+      "envFile": "${workspaceFolder}/mcp/.env",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch MCP Client",
+      "cwd": "${workspaceFolder}/mcp",
+      "program": "${workspaceFolder}/mcp/mcp-client.js",
+      "args": ["female patients 30-50 with emphysema"],
+      "skipFiles": ["<node_internals>/**"],
+      "envFile": "${workspaceFolder}/mcp/.env",
+      "console": "integratedTerminal"
     }
   ]
 }

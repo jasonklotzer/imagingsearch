@@ -64,8 +64,20 @@ function App() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Something went wrong on the server.");
+        let errorMessage = "Something went wrong on the server.";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          // Response is not JSON, try to get text
+          try {
+            const text = await response.text();
+            errorMessage = text || errorMessage;
+          } catch (textError) {
+            // Use default message
+          }
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();

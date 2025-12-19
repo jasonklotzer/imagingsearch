@@ -34,4 +34,43 @@ To run this project, you will need:
 
 * A Google Cloud Platform account with BigQuery and Vertex AI enabled.
 * Node.js and npm installed.
-* Appropriate environment variables set (see `.env` example).
+* Environment: create `web/.env` with `GCP_PROJECT_ID=<your-project-id>` (required) and optional `PORT=5000`.
+
+## Architecture
+
+The project is split into two parts:
+
+- **web/**: Combined Express API and React frontend. `/api/query` calls Gemini for SQL generation and BigQuery for results. `npm run dev` starts both servers via `concurrently`.
+- **mcp/**: Model Context Protocol (MCP) server exposing the `queryDicomData` tool via stdio, allowing integration with AI systems and tools. Proxies requests to the web API. Tested with Gemini CLI and VS Code MCP client.
+
+## Running the full stack
+
+1. Start the web app (API + React):
+```bash
+cd web
+npm install
+GCP_PROJECT_ID=<your-project-id> npm run dev
+```
+	- Development: serves React at http://localhost:3000 with proxy to the API on http://localhost:5000.
+	- Production: `npm start` (builds React then runs `node server.js`).
+
+2. In another terminal, start the MCP server:
+```bash
+cd mcp
+npm install
+npm start
+```
+
+The MCP server reaches the API at `http://localhost:5000/api/query` by default; override with `IMAGINGSEARCH_API_URL`.
+
+## MCP Tool Reference
+
+- **Tool name:** `queryDicomData`
+- **Description:** Query DICOM imaging studies using natural language filters (modality, findings, demographics, date ranges). Forwards queries to the imaging search backend API, which uses Gemini to interpret natural language and generate optimized SQL.
+- **Input:** `{ "textInput": "<natural language query>" }`
+- **Output:** JSON containing:
+  - `rows`: BigQuery results with patient and study metadata
+  - `geminiResponse`: Generated SQL, WHERE clause, text search terms, image search terms, and notes
+- **Example Query:** `"female patients 30-50 with emphysema"` returns studies matching demographic filters and the clinical finding.
+
+See [mcp/README.md](mcp/README.md) for detailed testing instructions, client configuration examples (Gemini CLI, VS Code), and environment variable reference.
