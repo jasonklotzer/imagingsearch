@@ -6,7 +6,9 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 dotenv.config();
 
 async function main() {
-  const textInput = process.argv[2] || "female patients 30-50 with emphysema";
+  const args = process.argv.slice(2);
+  const textInput = args.find((a) => !a.startsWith("-")) || "female patients 30-50 with emphysema";
+  const countOnly = args.includes("--count") || args.includes("--countOnly") || /^(how\s+many|count)\b/i.test(textInput);
 
   const transport = new StdioClientTransport({
     command: "node",
@@ -24,9 +26,9 @@ async function main() {
   const tools = await client.listTools();
   console.log("Available tools:", tools);
 
-  console.log("Calling queryDicomData with", { textInput });
+  console.log("Calling queryDicomData with", { textInput, countOnly });
   try {
-    const result = await client.callTool({ name: "queryDicomData", arguments: { textInput }});
+    const result = await client.callTool({ name: "queryDicomData", arguments: { textInput, countOnly }});
     console.log("Tool result:");
     console.log(JSON.stringify(result, null, 2));
   } catch (err) {

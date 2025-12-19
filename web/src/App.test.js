@@ -63,15 +63,25 @@ describe("App Component", () => {
     await userEvent.click(searchButton);
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        "/api/query",
-        expect.objectContaining({
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ textInput: "CT scan" }),
-        })
-      );
+      expect(fetch).toHaveBeenCalled();
     });
+
+    const [url, options] = fetch.mock.calls[0];
+    expect(url).toBe("/api/query");
+    expect(options).toEqual(
+      expect.objectContaining({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+    const parsedBody = JSON.parse(options.body);
+    expect(parsedBody).toEqual(
+      expect.objectContaining({ textInput: "CT scan" })
+    );
+    // limit/offset are now included by the UI for pagination
+    expect(parsedBody).toEqual(
+      expect.objectContaining({ limit: expect.any(Number), offset: expect.any(Number) })
+    );
   });
 
   test("displays error message on API failure", async () => {

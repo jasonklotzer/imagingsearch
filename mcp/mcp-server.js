@@ -18,9 +18,37 @@ console.error("[mcp-server] starting with API_URL=%s", API_URL);
 server.registerTool("queryDicomData",
   {
     description:
-      "Query DICOM imaging studies using natural language filters (modality, findings, demographics, date ranges). Forwards to the imagingsearch backend API.",
+      "Search for medical imaging studies (DICOM format) that originate in a PACS or VNA system using natural language. Searches across all DICOM metadata tags and semantic embeddings (text reports and images) ingested via dcm2bq. Gemini interprets the query and generates optimized SQL combining deterministic metadata filters with vector-based semantic search. Supports pagination (limit/offset), dry-run to preview SQL, and count-only mode to return just the total number of matching studies.",
     inputSchema: {
-        textInput: z.string().describe("Natural language description of the DICOM data to query."),
+      textInput: z
+        .string()
+        .describe(
+          "Natural language query for DICOM studies, e.g. 'female patients 30-50 with emphysema', 'CT scans past 5 years with pneumothorax', or 'CR/DX males with pleural effusion'."
+        ),
+      limit: z
+        .number()
+        .optional()
+        .describe(
+          "Maximum number of results to return (1-1000; default: 50). Applies after deterministic + semantic ranking."
+        ),
+      offset: z
+        .number()
+        .optional()
+        .describe(
+          "Number of results to skip for pagination (default: 0). Use with 'limit' to page through results."
+        ),
+      dryRun: z
+        .boolean()
+        .optional()
+        .describe(
+          "If true, return only the generated SQL and query plan metadata without executing against BigQuery (default: false)."
+        ),
+      countOnly: z
+        .boolean()
+        .optional()
+        .describe(
+          "If true, return only the exact total count of matching studies. Ignores limit/offset."
+        ),
     },
   },
   async (args, extra) => {
@@ -37,12 +65,20 @@ server.registerTool("queryDicomData",
       headers.Authorization = `Bearer ${API_KEY}`;
     }
 
+    const requestBody = {
+      textInput,
+      ...(args?.limit !== undefined && { limit: args.limit }),
+      ...(args?.offset !== undefined && { offset: args.offset }),
+      ...(args?.dryRun && { dryRun: args.dryRun }),
+      ...(args?.countOnly && { countOnly: args.countOnly }),
+    };
+
     let response;
     try {
       response = await fetch(API_URL, {
         method: "POST",
         headers,
-        body: JSON.stringify({ textInput })
+        body: JSON.stringify(requestBody),
       });
     } catch (err) {
       console.error("[mcp-server] fetch to API_URL failed:", err);

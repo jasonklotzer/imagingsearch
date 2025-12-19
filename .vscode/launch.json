@@ -18,6 +18,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Run Web Tests",
+      "cwd": "${workspaceFolder}/web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test",
+        "--",
+        "--watchAll=false",
+        "--runInBand",
+        "--testPathPattern=(src|test)/.*\\.test\\.js$"
+      ],
+      "env": {
+        "CI": "true"
+      },
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Launch MCP Server",
       "cwd": "${workspaceFolder}/mcp",
       "program": "${workspaceFolder}/mcp/mcp-server.js",
