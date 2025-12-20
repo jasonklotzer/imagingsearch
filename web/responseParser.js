@@ -58,6 +58,14 @@ function normalizeFields(obj) {
       }
       return;
     }
+
+    // Normalize whereClause - strip leading "WHERE" keyword and fix metadata references
+    if (key === "whereClause" && typeof value === "string") {
+      normalized[key] = value
+        .replace(/^\s*WHERE\s+/i, "") // Remove leading WHERE
+        .replace(/\bmetadata\b/g, "meta.metadata") // Replace metadata with meta.metadata
+        .trim() || null;
+    }
   });
 
   return normalized;

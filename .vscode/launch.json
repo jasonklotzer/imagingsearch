@@ -18,7 +18,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Web Tests",
+      "name": "Launch Web Tests",
       "cwd": "${workspaceFolder}/web",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
@@ -38,17 +38,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch MCP Server",
-      "cwd": "${workspaceFolder}/mcp",
-      "program": "${workspaceFolder}/mcp/mcp-server.js",
-      "skipFiles": ["<node_internals>/**"],
-      "envFile": "${workspaceFolder}/mcp/.env",
-      "console": "integratedTerminal"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch MCP Client",
+      "name": "Launch MCP Client (stdio)",
       "cwd": "${workspaceFolder}/mcp",
       "program": "${workspaceFolder}/mcp/mcp-client.js",
       "args": ["female patients 30-50 with emphysema"],
